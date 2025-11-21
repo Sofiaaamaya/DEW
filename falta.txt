@@ -55,3 +55,13 @@ EVALUACIÓN:
     10.SOLO usar QUERYSELECTOR para acceder al DOM.
 
 NOTA: Sube tres archivos CON TU NOMBRE Y EL NÚMERO DE LA TAREA (.html .css .js) en formato comprimido.
+
+position: absolute;
+width: 400px;
+height: 500px;
+display: block;
+top: 200px;
+background: #ccc;
+left: 600px;
+
+eso es para crear una ventana en html xd - DSW -
