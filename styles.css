@@ -1,3 +1,4 @@
+/* Estilos generales */
 body {
   margin: 5%;
   font-family: sans-serif;
@@ -16,7 +17,7 @@ form {
   background-color: #fff;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 fieldset {
@@ -28,8 +29,7 @@ fieldset {
   padding: 0;
 }
 
-.lateral-izq,
-.lateral-der {
+.lateral-izq, .lateral-der {
   display: flex;
   flex-direction: column;
   width: 48%;
@@ -51,6 +51,7 @@ input {
   transition: border-color 0.3s ease;
 }
 
+/* Estados de validación */
 input.valido {
   border-color: green;
 }
@@ -59,7 +60,8 @@ input.invalido {
   border-color: red;
 }
 
-input + p.mensaje-error {
+/* Mensajes de error */
+.mensaje-error {
   opacity: 0;
   height: 0;
   margin: 0;
@@ -68,12 +70,13 @@ input + p.mensaje-error {
   transition: all 0.3s ease;
 }
 
-input.invalido + p.mensaje-error {
+input.invalido + .mensaje-error {
   opacity: 1;
   height: auto;
   margin-bottom: 10px;
 }
 
+/* Botones */
 button {
   padding: 10px 20px;
   margin: 20px 10px 0;

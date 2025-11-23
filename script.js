@@ -1,135 +1,63 @@
-const validaciones = {
-     nombre:
-     {
-        regex: /^[A-Z]+[a-zA-Z]+\s*[A-Za-z]+/i
-        ,mensaje: "Debe comenzar en mayúscula"
-     }
-
-    ,apellidos:
-    {
-        regex:/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)?$/    
-        ,mensaje:"Máximo dos apellidos, ambos con mayúscula inicial."
-    }
-
-    ,dni:
-    { 
-        regex:/^[x]*\d{8}[a-zA-Z]$/i
-        ,mensaje:"Formato válido: 12345678X o X1234567L."
-    }
-
-    ,fechaNac:
-    { 
-        regex: /^(0?[1-9]|[12][0-9]|3[01])[/.](0?[1-9]|1[0-2])[/.]((19|20)[0-9]{2})$/i
-        ,mensaje: "Formato DD/MM/AAAA."
-    }
-
-    ,codPostal:
-    {
-        regex:/[0-9]{5}(\-?[0-9]{4})?$/i
-        ,mensaje:"Código postal español válido."
-    }
-
-    ,email:
-    { 
-        regex: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
-        ,mensaje: "Email válido requerido."
-    }
-
-    ,telFijo:
-    { 
-        regex:/^[89]\d{8}$/i 
-        ,mensaje:"Debe comenzar con 9 y tener 9 dígitos."
-    }
-
-    ,telMovil:
-    { 
-        regex:/^[67]\d{8}$/i 
-        ,mensaje:"Debe comenzar con 6 o 7 y tener 9 dígitos."
-    }
-
-    ,iban:
-    {       
-        regex:/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/i
-        ,mensaje:"IBAN español válido (ES + 22 dígitos)."
-    }
-
-    ,tarjetaCredito:
-    {
-        regex:/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|622((12[6-9]|1[3-9][0-9])|([2-8][0-9][0-9])|(9(([0-1][0-9])|(2[0-5]))))[0-9]{10}|64[4-9][0-9]{13}|65[0-9]{14}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})*$/i
-        ,mensaje:"Formato: 4444-4444-4444-4444."
-    }
-
-    ,contrasenha:
-    {
-        regex:/^[a-zA-Z0-9_$!¡@?¿=;:]{12,20}$/i
-    
-        ,mensaje:"12+ caracteres con letras, números y símbolo."
-    }
-
-    ,repetirContrasenha: {
-        mensaje: "Las contraseñas deben coincidir."
-    }
-
+//Declaración del objeto con los patrones de REGEX para cada campo del formulario.
+const patterns = {
+  nombre: /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+$/,
+  apellidos: /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)?$/, 
+  dni: /^([Xx]?\d{7,8}[A-Za-z])$/, 
+  fechaNac: /^(0?[1-9]|[12][0-9]|3[01])[/.](0?[1-9]|1[0-2])[/.](19|20)\d{2}$/, 
+  codPostal: /^(0[1-9]|[1-4][0-9]|5[0-2])\d{3}$/,
+  email: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i,
+  telFijo: /^9\d{8}$/, 
+  telMovil: /^[67]\d{8}$/, 
+  iban: /^ES\d{22}$/, 
+  tarjetaCredito: /^(\d{4}[- ]?){3}\d{4}$/,
+  contrasenha: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[_$!¡@?¿=;:])[A-Za-z\d_$!¡@?¿=;:]{12,20}$/ 
 };
 
+// Declara la constante 'inputs' que contendrá la colección de inputs del formulario.
+const inputs = document.querySelectorAll('input');
 
-function validarCampo(e) {
-  const input = e.target;
-  const campo = input.name;
-  const valor = input.value.trim();
+// Añado el evento keyup y blur a cada input para validar en tiempo real.
+inputs.forEach((input) => {
+  input.addEventListener('keyup', (e) => {
+    validate(e.target, patterns[e.target.name]);
+  });
+});
 
-  if (!validaciones[campo]) return;
-
-  let valido = true;
-
-  if (campo === "repetirContrasenha") {
+// Declaración de la función de validación 'validate'
+function validate(campo, regex) {
+  // Caso especial: repetir contraseña
+  if (campo.name === "repetirContrasenha") {
     const original = document.querySelector('[name="contrasenha"]').value;
-    valido = valor === original && original !== "";
-  } else {
-    valido = validaciones[campo].regex.test(valor);
+    if (campo.value === original && original !== "") {
+      campo.className = 'valido';
+    } else {
+      campo.className = 'invalido';
+    }
+    return;
   }
 
-  input.className = valido ? "valido" : "invalido";
-
-  const mensajeError = input.nextElementSibling;
-  if (mensajeError && mensajeError.classList.contains("mensaje-error")) {
-    mensajeError.style.opacity = valido ? "0" : "1";
-    mensajeError.style.height = valido ? "0" : "auto";
-    mensajeError.style.marginBottom = valido ? "0" : "10px";
+  // Validación normal con regex
+  if (regex && regex.test(campo.value.trim())) {
+    campo.className = 'valido';
+  } else {
+    campo.className = 'invalido';
   }
 }
 
-document.querySelectorAll("input").forEach((input) => {
-  input.addEventListener("keyup", validarCampo);
-});
-
-
-
-// Guardar DAtos
+//Guardar datos en sessionStorage al pulsar "Guardar"
 document.querySelector("button[type='submit']").addEventListener("click", (e) => {
-  e.preventDefault();
+  e.preventDefault(); // PAra evitar comportamiento por defecto
 
   const datos = {};
   let todoValido = true;
 
-  document.querySelectorAll("input").forEach((input) => {
-    const campo = input.name;
-    const valor = input.value.trim();
-
-    if (!validaciones[campo]) return;
-
-    let valido = true;
-
-    if (campo === "repetirContrasenha") {
-      const original = document.querySelector('[name="contrasenha"]').value;
-      valido = valor === original && original !== "";
+  inputs.forEach((input) => {
+    validate(input, patterns[input.name]);
+    if (input.className === "invalido") {
+      todoValido = false;
     } else {
-      valido = validaciones[campo].regex.test(valor);
+      datos[input.name] = input.value.trim();
     }
-
-    input.className = valido ? "valido" : "invalido";
-    if (!valido) todoValido = false;
-    else datos[campo] = valor;
   });
 
   if (todoValido) {
@@ -140,10 +68,7 @@ document.querySelector("button[type='submit']").addEventListener("click", (e) =>
   }
 });
 
-
-
-
-// Recuperar datos
+// Recuperar datos de sessionStorage al pulsar Recuperar
 document.querySelector("button[type='button']").addEventListener("click", () => {
   const datos = JSON.parse(sessionStorage.getItem("registroUsuario"));
 
@@ -152,32 +77,11 @@ document.querySelector("button[type='button']").addEventListener("click", () => 
     return;
   }
 
-  document.querySelectorAll("input").forEach((input) => {
-    const campo = input.name;
-    const valor = datos[campo] || "";
-    input.value = valor;
-
-
-    // Validar al recuperar
-    if (!validaciones[campo]) return;
-
-    let valido = true;
-
-    if (campo === "repetirContrasenha") {
-      const original = document.querySelector('[name="contrasenha"]').value;
-      valido = valor === original && original !== "";
-    } else {
-      valido = validaciones[campo].regex.test(valor);
-    }
-
-    input.className = valido ? "valido" : "invalido";
+  inputs.forEach((input) => {
+    input.value = datos[input.name] || "";
+    validate(input, patterns[input.name]); // Validar al recuperar
   });
 });
 
-
-
-
-
 // DATOS DE PRUEBA
-
 //ES9121000418450200051332
